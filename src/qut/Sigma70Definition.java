@@ -34,7 +34,7 @@ public class Sigma70Definition
         Gap spacer = new Gap(14, 20, new double[] {0.00,0.10,0.15,0.36,1.00,0.31,0.15,0.10,0.00});
 
         pwmM10.setImpact(1.0);
-        pwmM35.setImpact(0.9086);  //set weight = fractional range difference        
+        pwmM35.setImpact(0.9086);  //set weight = fractional range difference
         spacer.setImpact(0.15);
 
         Series series = new SeriesAll(threshold);

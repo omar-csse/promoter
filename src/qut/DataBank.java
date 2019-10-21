@@ -5,7 +5,7 @@ import edu.au.jacobi.pattern.Match;
 
 import static qut.Parallel.*;
 
-public class DataBank implements Callable<Prediction> {
+public class DataBank implements Callable<PredictionBank> {
 
     public static int counterExec = 0;
     private final Gene gene;
@@ -19,13 +19,13 @@ public class DataBank implements Callable<Prediction> {
     }
 
     @Override
-    public Prediction call() throws Exception {
+    public PredictionBank call() throws Exception {
         if (Homologous(this.gene.sequence, this.referenceGene.sequence)) {
             NucleotideSequence upStreamRegion = GetUpstreamRegion(this.nucleotides, this.gene);
             Match prediction = PredictPromoter(upStreamRegion);
             if (prediction != null) {
                 this.counterExec++;
-                return new Prediction(this.referenceGene.name, prediction);
+                return new PredictionBank(this.referenceGene.name, prediction);
             }
         }
         return null;

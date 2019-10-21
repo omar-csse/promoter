@@ -15,8 +15,9 @@ import java.util.stream.Collectors;
 public class Parallel {
 
     private static int numProcesses = Runtime.getRuntime().availableProcessors();
+    private static Object lock = new Object();
     private static HashMap<String, Sigma70Consensus> consensus = new HashMap<String, Sigma70Consensus>();
-    private static ThreadLocal<Series> sigma70_pattern = ThreadLocal.withInitial(() -> Sigma70Definition.getSeriesAll_Unanchored(0.7));
+    private static Series sigma70_pattern = Sigma70Definition.getSeriesAll_Unanchored(0.7);
     private static final Matrix BLOSUM_62 = BLOSUM62.Load();
     private static byte[] complement = new byte['z'];
 
@@ -66,7 +67,9 @@ public class Parallel {
     }
 
     public static Match PredictPromoter(NucleotideSequence upStreamRegion) {
-        return BioPatterns.getBestMatch(sigma70_pattern.get(), upStreamRegion.toString());
+        synchronized (lock) {
+            return BioPatterns.getBestMatch(sigma70_pattern, upStreamRegion.toString());
+        }
     }
 
     private static void ProcessDir(List<String> list, File dir) {
@@ -102,6 +105,7 @@ public class Parallel {
         List<Gene> referenceGenes = ParseReferenceGenes(referenceFile);
         List<DataBank> dataBanks = new LinkedList<>();
 
+        double startTime = System.currentTimeMillis();
         for (String filename : ListGenbankFiles(dir)) {
             System.out.println(filename);
             GenbankRecord record = Parse(filename);
@@ -112,6 +116,9 @@ public class Parallel {
                 }
             }
         }
+        double endTime = System.currentTimeMillis();
+        System.out.println("\n\nOverall Files Reading and Parsing Time (m): " + ( (endTime - startTime) / 1000 / 60 ) + "m");
+        System.out.println("Overall Files Reading and Parsing Time (s): " + ( (endTime - startTime) / 1000 ) + "s");
 
         ExecutorService executer = Executors.newFixedThreadPool(numProcesses);
         List<Future<Prediction>> results = executer.invokeAll(dataBanks);

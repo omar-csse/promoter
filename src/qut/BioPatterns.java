@@ -11,5 +11,5 @@ public class BioPatterns
     public static Match getBestMatch(Series pattern, String inputString)
     {
         return new Sequence("DNA",inputString).searchBest(1, 1, pattern);
-    }	        
+    }
 }
