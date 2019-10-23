@@ -121,10 +121,10 @@ public class Parallel {
         System.out.println("Overall Files Reading and Parsing Time (s): " + ( (endTime - startTime) / 1000 ) + "s");
 
         ExecutorService executer = Executors.newFixedThreadPool(numProcesses);
-        List<Future<Prediction>> results = executer.invokeAll(dataBanks);
+        List<Future<PredictionBank>> results = executer.invokeAll(dataBanks);
 
-        for (Future<Prediction> future: results) {
-            Prediction prediction = future.get();
+        for (Future<PredictionBank> future: results) {
+            PredictionBank prediction = future.get();
             if (prediction != null) {
                 consensus.get(prediction.getName()).addMatch(prediction.getPrediction());
                 consensus.get("all").addMatch(prediction.getPrediction());
